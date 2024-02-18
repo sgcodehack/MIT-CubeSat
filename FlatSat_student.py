@@ -83,11 +83,13 @@ def take_photo():
         
         #PAUSE
         if accelx > THRESHOLD or accely > THRESHOLD or accelz > THRESHOLD:
-            picam2.configure(camera_config)
-            picam2.start_preview(Preview.QTGL)
-            picam2.start()
+            picam2.stop()
+            config = picam2.still_configuration()
+            picam2.configure(config)
             time.sleep(2)
+            picam2.start()
             picam2.capture_file("test.jpg")
+            picam2.stop()
             git_push()
             
         
