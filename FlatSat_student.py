@@ -10,23 +10,21 @@ The provided functions are only for reference, you do not need to use them.
 You will need to complete the take_photo() function and configure the VARIABLES section
 """
 
-#AUTHOR: Sachit Gonur
-#DATE: 02/03/2024
+#AUTHOR: 
+#DATE:
 
 #import libraries
 import time
-import sys
-sys.path.append("/home/pi/MIT-CubeSat/FlatSat_student.py")
 import board
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 from git import Repo
-from picamera2 import Picamera2, Preview
+from picamera2 import Picamera2
 
 #VARIABLES
-THRESHOLD = 11      #Any desired value from the accelerometer
-REPO_PATH = "/home/pi/MIT_CubeSat2"     #Your github repo path: ex. /home/pi/FlatSatChallenge
-FOLDER_PATH = "/Images"   #Your image folder path in your GitHub repo: ex. /Images
+THRESHOLD = 0      #Any desired value from the accelerometer
+REPO_PATH = ""     #Your github repo path: ex. /home/pi/FlatSatChallenge
+FOLDER_PATH = ""   #Your image folder path in your GitHub repo: ex. /Images
 
 #imu and camera initialization
 i2c = board.I2C()
@@ -65,6 +63,7 @@ def img_gen(name):
     imgname = (f'{REPO_PATH}/{FOLDER_PATH}/{name}{t}.jpg')
     return imgname
 
+
 def take_photo():
     """
     This function is NOT complete. Takes a photo when the FlatSat is shaken.
@@ -80,18 +79,6 @@ def take_photo():
             #PUSH PHOTO TO GITHUB
         
         #PAUSE
-        if accelx > THRESHOLD or accely > THRESHOLD or accelz > THRESHOLD:
-            print('\n\n\n\n\n PICTURE \n\n')
-            config = picam2.create_preview_configuration()
-            picam2.configure(config)
-            picam2.start()
-            time.sleep(2)
-            picam2.capture_file("test.jpg")
-            picam2.stop()
-            img_gen("test.jpg")
-            git_push()
-            
-        
 
 
 def main():
