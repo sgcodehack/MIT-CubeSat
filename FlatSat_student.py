@@ -22,9 +22,9 @@ from git import Repo
 from picamera2 import Picamera2
 
 #VARIABLES
-THRESHOLD = 0      #Any desired value from the accelerometer
-REPO_PATH = ""     #Your github repo path: ex. /home/pi/FlatSatChallenge
-FOLDER_PATH = ""   #Your image folder path in your GitHub repo: ex. /Images
+THRESHOLD = 12      #Any desired value from the accelerometer
+REPO_PATH = "/home/pi/MIT-CubeSat"     #Your github repo path: ex. /home/pi/FlatSatChallenge
+FOLDER_PATH = "/Images"   #Your image folder path in your GitHub repo: ex. /Images
 
 #imu and camera initialization
 i2c = board.I2C()
@@ -37,19 +37,16 @@ def git_push():
     """
     This function is complete. Stages, commits, and pushes new images to your GitHub repo.
     """
-    try:
-        repo = Repo(REPO_PATH)
-        origin = repo.remote('origin')
-        print('added remote')
-        origin.pull()
-        print('pulled changes')
-        repo.git.add(REPO_PATH + FOLDER_PATH)
-        repo.index.commit('New Photo')
-        print('made the commit')
-        origin.push()
-        print('pushed changes')
-    except:
-        print('Couldn\'t upload to git')
+    repo = Repo(REPO_PATH)
+    origin = repo.remote('origin')
+    print('added remote')
+    origin.pull()
+    print('pulled changes')
+    repo.git.add(REPO_PATH + FOLDER_PATH)
+    repo.index.commit('New Photo')
+    print('made the commit')
+    origin.push()
+    print('pushed changes')
 
 
 def img_gen(name):
@@ -79,6 +76,15 @@ def take_photo():
             #PUSH PHOTO TO GITHUB
         
         #PAUSE
+        if accelx > THRESHOLD or accely > THRESHOLD or accelz > THRESHOLD:
+            config = picam2.create_preview_configuration()
+            picam2.configure(config)
+            picam2.start()
+            time.sleep(2)
+            picam2.capture_file("MIT-CubeSat/Images/test.jpg")
+            picam2.stop()
+            img_gen("SachitG")
+            git_push()
 
 
 def main():
