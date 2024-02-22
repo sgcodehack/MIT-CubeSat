@@ -19,6 +19,7 @@ import board
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 from git import Repo
+from git import subprocess
 from picamera2 import Picamera2
 
 #VARIABLES
