@@ -14,16 +14,23 @@ def get_mask(image, lower_bound, upper_bound):
 def part_1(image):
     color_range = {}
     #Figure out what the lower and upper bounds for each color should be
-    color_range["blue"] = [(?,?,?), (?,?,?)]
-    color_range["green"] = [(?,?,?), (?,?,?)]
-    color_range["red"] = [(?,?,?), (?,?,?)]
+    color_range["blue"] = [(255,0,0), (255,0,0)]
+    color_range["green"] = [(0,255,0), (0,255,0)]
+    color_range["red"] = [(0,0,255), (0,0,255)]
     
     #Counter for amount of pixels of each color
     color_amount = {"red":0, "green":0, "blue":0}
         
     #PART 1: COLOR IDENTIFICATION
     #<YOUR CODE GOES HERE>
-    
+    for pixels in image:
+        r, g, b = pixels
+        if b > 0:
+            color_amount["blue"] = color_amount["blue"] + 1
+        if g > 0:
+            color_amount["green"] = color_amount["green"] + 1
+        if r > 0:
+            color_amount["red"] = color_amount["red"] + 1
     
     
     
