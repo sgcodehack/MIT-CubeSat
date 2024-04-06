@@ -19,22 +19,22 @@ import board
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
 from adafruit_lis3mdl import LIS3MDL
 from git import Repo
-from git import subprocess
+import subprocess
 from picamera2 import Picamera2
 
 #VARIABLES
 THRESHOLD = 12      #Any desired value from the accelerometer
 REPO_PATH = "/home/pi/MIT-CubeSat"     #Your github repo path: ex. /home/pi/FlatSatChallenge
-FOLDER_PATH = "/Images"   #Your image folder path in your GitHub repo: ex. /Images
+FOLDER_PATH = "Images"   #Your image folder path in your GitHub repo: ex. /Images
 
 #imu and camera initialization
 i2c = board.I2C()
 accel_gyro = LSM6DS(i2c)
 mag = LIS3MDL(i2c)
 picam2 = Picamera2()
+picam2.options["quality"] = 40
 
-
-def git_push():
+def git_push(image):
     """
     This function is complete. Stages, commits, and pushes new images to your GitHub repo.
     """
@@ -43,7 +43,7 @@ def git_push():
     print('added remote')
     origin.pull()
     print('pulled changes')
-    repo.git.add(REPO_PATH + FOLDER_PATH)
+    repo.git.add(image)
     repo.index.commit('New Photo')
     print('made the commit')
     origin.push()
@@ -69,7 +69,6 @@ def take_photo():
     """
     while True:
         accelx, accely, accelz = accel_gyro.acceleration
-
         #CHECKS IF READINGS ARE ABOVE THRESHOLD
             #PAUSE
             #name = ""     #First Name, Last Initial  ex. MasonM
@@ -82,10 +81,11 @@ def take_photo():
             picam2.configure(config)
             picam2.start()
             time.sleep(2)
-            picam2.capture_file("MIT-CubeSat/Images/test.jpg")
+            image = img_gen("SachitG")
+            picam2.capture_file(image)
             picam2.stop()
-            img_gen("SachitG")
-            git_push()
+            time.sleep(2)
+            git_push(image)
 
 
 def main():

@@ -14,23 +14,25 @@ def get_mask(image, lower_bound, upper_bound):
 def part_1(image):
     color_range = {}
     #Figure out what the lower and upper bounds for each color should be
-    color_range["blue"] = [(255,0,0), (255,0,0)]
-    color_range["green"] = [(0,255,0), (0,255,0)]
-    color_range["red"] = [(0,0,255), (0,0,255)]
+    color_range["blue"] = [150, 255]
+    color_range["green"] = [150, 255]
+    color_range["red"] = [150, 255]
     
     #Counter for amount of pixels of each color
     color_amount = {"red":0, "green":0, "blue":0}
         
     #PART 1: COLOR IDENTIFICATION
     #<YOUR CODE GOES HERE>
-    for pixels in image:
-        r, g, b = pixels
-        if b > 0:
-            color_amount["blue"] = color_amount["blue"] + 1
-        if g > 0:
-            color_amount["green"] = color_amount["green"] + 1
-        if r > 0:
-            color_amount["red"] = color_amount["red"] + 1
+    height, width, channels = image.shape
+    for y in range(height):
+        for x in range(width):
+            b, g, r = image[y][x]
+            if b >= color_range["blue"][0] and b <= color_range["blue"][1]:
+                color_amount["blue"] = color_amount["blue"] + 1
+            if g >= color_range["green"][0] and g <= color_range["green"][1]:
+                color_amount["green"] = color_amount["green"] + 1
+            if r >= color_range["red"][0] and r <= color_range["red"][1]:
+                color_amount["red"] = color_amount["red"] + 1
     
     
     
@@ -46,7 +48,17 @@ def part_1(image):
 def part_2(image, image_HSV):
     #PART 2 TODO: Increase saturation, contrast, brightness, etc
     #<YOUR CODE GOES HERE>
-    enhanced_image =  #Don't change the input images, store new enhanced image here
+    enhanced_image = np.copy(image)
+    height, width, channels = image.shape
+    for y in range(height):
+        for x in range(width):
+            pixels = image[y][x]
+            brightness = 40
+            contrast = 2
+            c = [brightness, contrast]
+            enhanced_image[y][x][0] = max(pixels[0] * c[0], 255)
+            enhanced_image[y][x][1] = max(pixels[1] * c[0], 255)
+            enhanced_image[y][x][2] = max(pixels[2] * c[0], 255)
     
     return enhanced_image
 
@@ -59,7 +71,7 @@ def color_id(image_file = 'test.jpg', show = False):
                      #on Github if you don't have VNC/X forwarding
 
 
-    image = cv2.imread('images/' + image_file) #Converts image to numpy array in BGR format
+    image = cv2.imread(image_file) #Converts image to numpy array in BGR format
     image_HSV = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) #Converts BGR image to HSV format
     
     color_range, perc_blue, perc_green, perc_red = part_1(image)
@@ -90,21 +102,19 @@ def color_id(image_file = 'test.jpg', show = False):
         cv2.imwrite(folder_path + '/red_mask.jpg', red_mask)
         print('Image masks saved')
     
-    #Uncomment when you want to work on part 2
-    """
-    enhanced_image = part_2(image, image_HSV)
+    # #Uncomment when you want to work on part 2
+    # enhanced_image = part_2(image, image_HSV)
     
-    #Shows orginal image and enhanced image
-    if show:
-        cv2.imshow('Original Image', image) 
-        cv2.imshow('Enhanced Image', enhanced_image) 
+    # #Shows orginal image and enhanced image
+    # if show:
+    #     cv2.imshow('Original Image', image) 
+    #     cv2.imshow('Enhanced Image', enhanced_image) 
         
-        cv2.waitKey()
-        cv2.destroyAllWindows()
-    else:
-        cv2.imwrite(folder_path + '/enhanced_image.jpg', enhanced_image)
-        print('Enhanced image saved')
-    """
+    #     cv2.waitKey()
+    #     cv2.destroyAllWindows()
+    # else:
+    #     cv2.imwrite(folder_path + '/enhanced_image.jpg', enhanced_image)
+    #     print('Enhanced image saved')
     
 
 """ This code is for command line entry. It allows you to add arguments 
