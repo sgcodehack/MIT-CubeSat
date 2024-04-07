@@ -9,66 +9,81 @@ relies on your sensor functions here.
 """
 
 #import libraries
-import time
-import numpy as np
-import time
-import os
-import board
-import busio
-from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS
-from adafruit_lis3mdl import LIS3MDL
+#import libraries                                                                    
+import time                                                                          
+import numpy as np                                                                   
+import time                                                                          
+import os                                                                            
+import board                                                                         
+import busio                                                                         
+from adafruit_lsm6ds.lsm6dsox import LSM6DSOX as LSM6DS                              
+from adafruit_lis3mdl import LIS3MDL                                                 
 
-#imu initialization
-i2c = busio.I2C(board.SCL, board.SDA)
-accel_gyro = LSM6DS(i2c)
-mag = LIS3MDL(i2c)
+#imu initialization                                                                  
+i2c = busio.I2C(board.SCL, board.SDA)                                                
+accel_gyro = LSM6DS(i2c)                                                             
+mag = LIS3MDL(i2c)                                                                   
 
 
-#Activity 1: RPY based on accelerometer and magnetometer
-def roll_am(accelX,accelY,accelZ):
-    roll = np.arctan2(accelY / (np.sqrt(np.square(accelX) + np.square(accelZ))))
-    return 180 / np.pi * roll
+#Activity 1: RPY based on accelerometer and magnetometer                             
+def roll_am(accelX,accelY,accelZ):                                                   
+    roll = np.arctan(accelY / (np.sqrt(np.square(accelX) + np.square(accelZ))))      
+    return 180 / np.pi * roll                                                        
 
-def pitch_am(accelX,accelY,accelZ):
-    pitch = np.arctan2(accelX / (np.sqrt(np.square(accelY) + np.square(accelZ))))
-    return 180 / np.pi * pitch
+def pitch_am(accelX,accelY,accelZ):                                                  
+    pitch = np.arctan(accelX / (np.sqrt(np.square(accelY) + np.square(accelZ))))     
+    return 180 / np.pi * pitch                                                       
 
-def yaw_am(accelX,accelY,accelZ,magX,magY,magZ):
-    mag_x = magX * np.cos(pitch_am(accelX, accelY, accelZ)) + magY * np.sin(pitch_am(accelX, accelY, accelZ)) + magZ * np.cos(roll_am(accelX, accelY, accelZ)) * np.sin(pitch_am(accelX, accelY, accelZ))
-    mag_y = magY * np.cos(roll_am(accelX, accelY, accelZ)) - magZ * np.sin(roll_am(accelX, accelY, accelZ))
-    return (180/np.pi)*np.arctan2(-mag_y, mag_x)
+def yaw_am(accelX,accelY,accelZ,magX,magY,magZ):                                     
+    mag_x = magX * np.cos(pitch_am(accelX, accelY, accelZ)) + magY * np.sin(pitch_am(accelX, accelY, accelZ)) * np.sin(roll_am(accelX, accelY, accelZ)) + magZ * np.cos(roll_am(accelX, accelY, accelZ)) * np.sin(pitch_am(accelX, accelY, accelZ))                                                                                  
+    mag_y = magY * np.cos(roll_am(accelX, accelY, accelZ)) - magZ * np.sin(roll_am(accelX, accelY, accelZ))                                                          
+    return (180/np.pi)*np.arctan2(-mag_y, mag_x)                                     
 
-#Activity 2: RPY based on gyroscope
-def roll_gy(prev_angle, delT, gyro):
-    #TODO
-    return roll
+#Activity 2: RPY based on gyroscope                                                  
+def roll_gy(prev_angle, delT, gyro):                                                 
+    roll = prev_angle + delT * gyro                                                  
+    return roll                                                                      
 def pitch_gy(prev_angle, delT, gyro):
-    #TODO
+    pitch = prev_angle + delT * gyro
     return pitch
 def yaw_gy(prev_angle, delT, gyro):
-    #TODO
+    yaw = prev_angle + delT * gyro
     return yaw
 
 #Activity 3: Sensor calibration
 def calibrate_mag():
-    #TODO: Set up lists, time, etc
-    #print("Preparing to calibrate magnetometer. Please wave around.")
-    #time.sleep(3)
-    #print("Calibrating...")
-    #TODO: Calculate calibration constants
-   # print("Calibration complete.")
-    return [0,0,0]
+    x = []
+    y = []
+    z = []
+    print("Preparing to calibrate magnetometer. Please wave around.")
+    for i in range (1000):
+        x1, y1, z1 = mag.magnetic
+        x.append(x1)
+        y.append(y1)
+        z.append(z1)
+    time.sleep(3)
+    print("Calibrating...")
+    av = [(max(x) + min(x)) / 2, (max(y) + min(y)) / 2, (max(z) + min(z)) / 2]
+    print("Calibration complete.")
+    return av
 
 def calibrate_gyro():
-    #TODO
-    #print("Preparing to calibrate gyroscope. Put down the board and do not touch it.")
-    #time.sleep(3)
-    #print("Calibrating...")
-    #TODO
-    #print("Calibration complete.")
-    return [0, 0, 0]
+    x = []
+    y = []
+    z = []
+    print("Preparing to calibrate gyroscope. Put down the board and do not touch it.")
+    time.sleep(3)
+    print("Calibrating...")
+    for i in range (1000):
+        x1, y1, z1 = accel_gyro.acceleration
+        x.append(x1)
+        y.append(y1)
+        z.append(z1)
+    av = [(max(x) + min(x)) / 2, (max(y) + min(y)) / 2, (max(z) + min(z)) / 2]
+    print("Calibration complete.")
+    return av
 
-def set_initial(mag_offset = [0,0,0]):
+def set_initial(mag_offset):
     """
     This function is complete. Finds initial RPY values.
 
