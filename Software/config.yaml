@@ -1,0 +1,5 @@
+train: /home/pi/MIT-CubeSat/Software/basketballs/images/train
+val: /home/pi/MIT-CubeSat/Software/basketballs/images/test
+
+nc: 1
+names: ['basketball']
